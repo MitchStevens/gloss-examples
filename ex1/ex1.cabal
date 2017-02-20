@@ -49,6 +49,20 @@ cabal-version:       >=1.10
 executable ex1
   -- .hs or .lhs file containing the Main module.
   main-is:              Bullets.hs
+
   build-depends:        base >=4.8 && <4.9,
                         gloss >=1.10.2.5
+
   default-language:     Haskell2010
+
+
+
+
+
+
+
+
+
+
+
+--

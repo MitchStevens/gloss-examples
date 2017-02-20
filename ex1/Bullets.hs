@@ -24,6 +24,7 @@ gravity = Tuple2 0 (-9.8)
 
 (|>) :: a -> (a -> a) -> a
 x |> f = f x
+infixl 5 |>
 
 class ModelElement t where
 		tick :: Model -> t -> t
