@@ -4,18 +4,22 @@ import Data.Monoid
 
 type Pos  = Tuple2 Float
 type Vel  = Tuple2 Float
-data Ball = Ball Pos Vel
+type Acc  = Tuple2 Float
+data Ball = Ball Pos Vel Acc
 data Model = Model [Ball]
 
-height, width :: Int
-height = 768
-width  = 1024
+fps :: Int
+fps = 24
 
-tstep, radius :: Float
-tstep = 1000.0/24.0 --rate in which
-radius = 10
+height, width, tstep, radius :: Float
+height = 768.0
+width  = 1024.0
+tstep = 1000.0/(fromIntegral fps)
+radius = 10.0
 
-gravity :: Vel
+origin = (Float, Float)
+
+gravity :: Acc
 gravity = Tuple2 0 (-9.8)
 
 (|>) :: a -> (a -> a) -> a
@@ -30,11 +34,42 @@ instance ModelElement Model where
 		draw (Model balls) = Pictures (map draw balls)
 
 -- BALL METHODS
-instance Tickable Ball where
-		tick _ (Ball pos vel) = Ball (pos <> vel) vel
-		draw (Ball pos _) =
+instance ModelElement Ball where
+		tick _ ball = ball |> calc_pos |> calc_vel |> calc_acc |> apply_collisions
+		draw (Ball (Tuple2 x y) _ _) = translate x y $ Circle radius
 
-calc_pos :: Ball ->
+calc_pos, calc_vel, calc_acc :: Ball -> Ball
+calc_pos (Ball p v a) = Ball (p |+| (v |*| tstep)) v a
+calc_vel (Ball p v a) = Ball p (v |+| (a |*| tstep)) a
+calc_acc (Ball p v a) = Ball p v gravity
 
-apply_gravity :: Ball -> Ball
-apply_gravity (Ball pos vel) = Ball pos (vel <> gravity)
+apply_collisions :: Model -> Ball -> Ball
+apply_collisions _ b@(Ball (Tuple2 px py) (Tuple2 vx vy) a) =
+	if (y < 0)
+		then Ball (Tuple2 px radius) (Tuple2 vx (-vy)) a
+		else b
+
+Model model = Model [Ball (Tuple2 500, 500) zero zero]
+main = simulate red fps model draw (\_ _ m -> tick m)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--

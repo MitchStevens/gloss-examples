@@ -16,6 +16,9 @@ instance Applicative Tuple2 where
 	pure a = Tuple2 a a
 	Tuple2 f g <*> Tuple2 x y = Tuple2 (f x) (g y)
 
+zero :: Num n => Tuple2 n
+zero = Tuple2 0 0
+
 inv :: (Num n) => Tuple2 n -> Tuple2 n
 inv = fmap (*(-1))
 
